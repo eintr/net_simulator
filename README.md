@@ -25,7 +25,7 @@ make install
 ### Configure
 Just take a look at example.conf and guess... Yes, it's in json.
 
-* "RemoteAddress" and "RemotePort" indicates the peer side socket address. If these 2 entries are ommited, the program will be running in passive mode which means it will use the source address/port of the first packet it receives as the peer side address/port, and it will discard all packets before this.
+* "RemoteAddress" and "RemotePort" indicates the peer side socket address. If these 2 entries are ommited, the program will be running in passive mode which means it will use the source address/port of the first packet it receives as the peer side address/port, and it will discard all outgoing packets before this.
 
 * "LocalPort" indicates the local socket port, "0.0.0.0" is always used.
 
