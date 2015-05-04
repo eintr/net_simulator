@@ -13,7 +13,7 @@
 
 #define LOAD_KEYWORD    "load_json"
 
-cJSON *conf_load_file(const char *filename);
+cJSON *conf_load(const char *filename);
 
 /**
 	\fn	int conf_delete(cJSON *)
@@ -21,15 +21,12 @@ cJSON *conf_load_file(const char *filename);
 */
 int conf_delete(cJSON *);
 
-#if 0
-cJSON *conf_combine(cJSON *to, cJSON *from);
-#endif
-
 cJSON *conf_get(const char *, cJSON *);
 
-int conf_get_int(const char *, cJSON *);
-int conf_get_bool(const char *, cJSON *);
-char *conf_get_str(const char *, cJSON *);
+#define	conf_get_int(NAME, JSON) cJSON_GetObjectItem(JSON, NAME)->valueint
+#define	conf_get_double(NAME, JSON) cJSON_GetObjectItem(JSON, NAME)->valuedouble
+#define	conf_get_str(NAME, JSON) cJSON_GetObjectItem(JSON, NAME)->valuestring
+#define	conf_get_bool(NAME, JSON) (cJSON_GetObjectItem(JSON, NAME)->type==cJSON_True)
 
 #endif
 

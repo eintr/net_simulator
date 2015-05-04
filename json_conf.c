@@ -119,8 +119,12 @@ cJSON *conf_get(const char *name, cJSON *c)
 {
 	return cJSON_GetObjectItem(c, name);
 }
-
+/*
 int conf_get_int(const char *name, cJSON *c)
+{
+	return cJSON_GetObjectItem(c, name)->valueint;
+}
+double conf_get_double(const char *name, cJSON *c)
 {
 	cJSON *tmp;
 	if (c==NULL) {
@@ -128,9 +132,9 @@ int conf_get_int(const char *name, cJSON *c)
 	}
 	tmp = cJSON_GetObjectItem(c, name);
 	if (tmp) {
-		return tmp->valueint;
+		return tmp->valuedouble;
 	}
-	return -1;
+	return 0.0;
 }
 int conf_get_bool(const char *name, cJSON *c)
 {
@@ -150,6 +154,7 @@ char *conf_get_str(const char *name, cJSON *c)
 	}
 	return NULL;
 }
+*/
 
 int conf_delete(cJSON *conf)
 {
