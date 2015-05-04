@@ -21,10 +21,13 @@ cJSON *conf_load_file(const char *filename);
 */
 int conf_delete(cJSON *);
 
+#if 0
+cJSON *conf_combine(cJSON *to, cJSON *from);
+#endif
+
 cJSON *conf_get(const char *, cJSON *);
 
 int conf_get_int(const char *, cJSON *);
-double conf_get_double(const char *, cJSON *);
 int conf_get_bool(const char *, cJSON *);
 char *conf_get_str(const char *, cJSON *);
 
