@@ -9,7 +9,7 @@ LDFLAGS+=-lpthread -lm -lssl -lcrypto -lrt
 
 SERVERFNAME=wormhole
 
-sources=main.c relayer.c json_conf.c cJSON.c myrand.c ds_llist.c util_time.c
+sources=main.c json_conf.c cJSON.c tun.c ds_llist.c util_time.c
 
 objects=$(sources:.c=.o)
 
