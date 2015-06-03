@@ -23,17 +23,81 @@ static int shell(const char *cmd)
 
 	printf("run: %s  ...  ", cmd);
 	ret = system(cmd);
-	if (ret==-1) {
-		printf("failed: %m.\n");
+	if (ret==0) {
+		printf("OK\n", ret);
 	} else {
-		printf("status=%d.\n", ret);
+		printf("failed: %m.\n");
 	}
 	return ret;
 }
 
-static int client_chap(int sd, cJSON *conf)
+static int client_chap(struct client_conn_st *c, cJSON *conf)
 {
+	char *username, *password, *localnet, *prefix, *len, *pos;
+	struct frame_st *msg;
+	struct in_addr trans;
+	ssize_t msg_len;
+	struct sockaddr_in server_addr;
+	socklen_t server_addr_len;
 
+	username = conf_get_str("Username", conf);
+	if (username==NULL) {
+		fprintf(stderr, "Username not defined!\n");
+		abort();
+	}
+	password = conf_get_str("Password", conf);
+	if (password==NULL) {
+		fprintf(stderr, "Password not defined!\n");
+		abort();
+	}
+	msg_len = 9+sizeof(struct frame_body_chap_st)+strlen(username);
+	msg = alloca(msg_len);
+	memset(msg->salt, 0, SALT_LENGTH);
+	msg->conn_id = CONNID_ANY;
+	msg->code = CODE_CHAP;
+	localnet = conf_get_str("LocalNet", conf);
+	if (localnet!=NULL) {
+		pos = strchr(localnet, '/');
+		*pos = '\0';
+		prefix = localnet;
+		len = pos+1;
+		inet_pton(AF_INET, prefix, &trans);
+		msg->prefix = trans.s_addr;
+		msg->prefix_len = strtol(len);
+	} else {
+		msg->prefix = 0xffffffffUL;
+		msg->prefix_len = 32;
+	}
+	memset(msg->md5, 0, MD5_DIGEST_LENGTH);
+	strcpy(msg->client_id, username);
+	sendto(c->sd, msg, msg_len, 0, (void*)(c->peer), sizeof(*c->peer));
+
+	msg = alloca(FRAMESIZE_MAX);
+	server_addr_len = sizeof(server_addr);
+	while (1) {
+		len = recvfrom(c->sd, msg, FRAMESIZE_MAX, 0, (void*)&server_addr, &server_addr_len);
+		if (len==0) {
+			fprintf(stderr, "Received a zero length msg!\n");
+			continue;
+		}
+		if (len<0) {
+			if (errno==EINTR || errno==EAGAIN) {
+				continue;
+			}
+			fprintf(stderr, "recvfrom(): %m\n");
+			abort();
+		}
+		if (msg->code==CODE_CHAP_CONNECT ) {
+			fprintf(stderr, "CHAP passed.\n");
+			return 0;
+		} else if (msg->code==CODE_CHAP_REJECT) {
+			fprintf(stderr, "CHAP rejected by server with reason %.8x.\n", msg->body_chap_reject.errcode);
+			return -1;
+		} else {
+			fprintf(stderr, "Received an irrelavent msg.\n");
+			continue;
+		}
+	}
 }
 
 static int client_conn_init(cJSON *conf)
@@ -117,7 +181,11 @@ static int client_conn_chap(cJSON *conf)
 void client(cJSON *conf)
 {
 	if (client_conn_init(conf)!=0) {
-		return -1;
+		return;
 	}
+	if (client_chap(conn, conf)!=0) {
+		return;
+	}
+	client_relay(conn);
 }
 
