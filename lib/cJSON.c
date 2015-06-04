@@ -330,7 +330,7 @@ char *cJSON_PrintUnformatted(cJSON *item)	{return print_value(item,0,0);}
 
 int cJSON_fdPrint(int fd, cJSON *item)
 {
-	int pos, len, ret, count;
+	int pos, len, ret=0, count;
 	char *str;
 
 	str = cJSON_Print(item);

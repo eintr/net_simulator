@@ -174,7 +174,7 @@ static tun_config()
 	shell(cmdline);
 }
 
-static int client_conn_chap(cJSON *conf)
+static void client_relay(struct client_conn_st *c)
 {
 }
 

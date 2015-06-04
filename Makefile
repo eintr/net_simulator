@@ -2,25 +2,15 @@ PREFIX=/usr/local
 SBINDIR=$(PREFIX)/sbin
 
 #######################################
-
-CFLAGS+=-I -pthread -Wall -g -D_GNU_SOURCE -O0
-
-LDFLAGS+=-lpthread -lm -lssl -lcrypto -lrt 
-
-SERVERFNAME=wormhole
-
-sources=main.c json_conf.c cJSON.c tun.c ds_llist.c util_time.c
-
-objects=$(sources:.c=.o)
-
-all: $(SERVERFNAME)
-
-$(SERVERFNAME): $(objects)
-	    $(CC) -o $@ $^ $(LDFLAGS)
+all:
+%:
+	make -C lib $@
+	make -C server $@
+	make -C client $@
 
 install: all
-	    $(INSTALL) $(SERVERFNAME) $(SBINDIR)/
-
-clean:
-	    rm -f $(objects) $(SERVERFNAME)
+	[ -d $(PREFIX) ] || mkdir -p $(PREFIX)
+	[ -d $(SBINDIR) ] || mkdir $(SBINDIR)
+	[ -d $(CONFDIR) ] || mkdir $(CONFDIR)
+	make -C src $@
 
