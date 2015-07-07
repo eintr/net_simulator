@@ -125,6 +125,7 @@ main(int argc, char **argv)
 
 	parse_args(argc, argv);
 
+	fprintf(stderr, "Load config: %s\n", config_file);
 	conf = conf_load(config_file);
 	if (conf==NULL) {
 		fprintf(stderr, "Load config failed.\n");
@@ -146,7 +147,7 @@ main(int argc, char **argv)
 
 	local_addr.sin_family = PF_INET;
 	local_addr.sin_addr.s_addr = 0;
-	local_addr.sin_port = htons(conf_get_int("LocalPort", conf));
+	local_addr.sin_port = htons(*conf_get_int("LocalPort", conf));
 	if (bind(sd, (void*)&local_addr, sizeof(local_addr))<0) {
 		perror("bind()");
 		exit(1);
@@ -165,8 +166,8 @@ main(int argc, char **argv)
 	shell(cmdline);
 
 	rate = conf_get_str("Rate", conf);
-	loss = conf_get_int("Loss", conf);
-	delay = conf_get_int("Delay", conf);
+	loss = *conf_get_int("Loss", conf);
+	delay = *conf_get_int("Delay", conf);
 
 	snprintf(cmdline, BUFSIZE, "tc qdisc add dev %s root netem delay %dms %dms rate %sbit loss random %d", tun_name, delay, delay/4, rate, loss);
 
