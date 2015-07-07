@@ -6,7 +6,6 @@ A REALLY simple C program to simulate delay, packet loss and speed limit between
 ### Features
  * Use UDP between hosts.
  * Create point-to-point tunnel with tun devices.
- * Flow control with TBF(Token Bucket Filter)
  * Let me think...
 
 ---
@@ -32,10 +31,11 @@ Just take a look at example.conf and guess... Yes, it's in json.
 * "TunnelLocalAddr" and "TunnelPeerAddr" indicates the IP addresses would be configured to the tun device after it is created. 
 * "DropRate" indicates packet loss probability, value: [0-1]
 
-* "TBF_Bps" and "TBF_burst" indicates the TBF(Token Bucket Filter) parameter for speed limit. What is TBF? Google it if needed. "TBF_Bps" value is BYTEs per second. "TBF_burst" value is also in BYTEs.
+* "Rate" indicates the speed limit. In BYTEs per second.
 
 * "Delay" indicates the time delay of each packet, value in ms(millisecond). Note: You need erally big RAM if you configred a very big delay in very big Bps. 
 
+* "Loss" indicates packet loss rate.
 
 NOTE: All configures are working while SENDING packets! Receiving packet procedure is not controlled at all! I have told you!
 
@@ -50,9 +50,8 @@ configure file:
 	"TunnelLocalAddr"	:	"172.16.111.1",
 	"TunnelPeerAddr"	:	"172.16.111.2",
 
-	"DropRate"			:	0.05,
-	"TBF_Bps"			:	10000000,
-	"TBF_burst"			:	100000000,
+	"Loss"				:	0.05,
+	"Rate"				:	10000000,
 	"Delay"				:	100
 }
 ```
@@ -71,9 +70,8 @@ configure file:
 	"TunnelLocalAddr"	:	"172.16.111.2",
 	"TunnelPeerAddr"	:	"172.16.111.1",
 
-	"DropRate"			:	0.05,
-	"TBF_Bps"			:	10000000,
-	"TBF_burst"			:	100000000,
+	"Loss"				:	0.05,
+	"Rate"				:	10000000,
 	"Delay"				:	100
 }
 ```

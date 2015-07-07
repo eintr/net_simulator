@@ -120,6 +120,8 @@ main(int argc, char **argv)
 	char cmdline[BUFSIZE];
 	cJSON *conf;
 	char *tun_local_addr, *tun_peer_addr;
+	char *rate;
+	int loss, delay;
 
 	parse_args(argc, argv);
 
@@ -161,6 +163,12 @@ main(int argc, char **argv)
 	shell(cmdline);
 	snprintf(cmdline, BUFSIZE, "ip link set dev %s up", tun_name);
 	shell(cmdline);
+
+	rate = conf_get_str("Rate", conf);
+	loss = conf_get_int("Loss", conf);
+	delay = conf_get_int("Delay", conf);
+
+	snprintf(cmdline, BUFSIZE, "tc qdisc add dev %s root netem delay %dms %dms rate %sbit loss random %d", tun_name, delay, delay/4, rate, loss);
 
 	relay(sd, tun_fd, conf);
 
