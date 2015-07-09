@@ -170,6 +170,7 @@ main(int argc, char **argv)
 	delay = *conf_get_int("Delay", conf);
 
 	snprintf(cmdline, BUFSIZE, "tc qdisc add dev %s root netem delay %dms %dms rate %sbit loss random %d", tun_name, delay, delay/4, rate, loss);
+	shell(cmdline);
 
 	relay(sd, tun_fd, conf);
 
