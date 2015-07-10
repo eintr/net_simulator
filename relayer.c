@@ -256,7 +256,7 @@ void relay(int sd, int tunfd, cJSON *conf)
 
 		peer_addr->sin_family = PF_INET;
 		inet_pton(PF_INET, remote_ip, &peer_addr->sin_addr);
-		peer_addr->sin_port = htons(conf_get_int("RemotePort", conf));
+		peer_addr->sin_port = htons(*conf_get_int("RemotePort", conf));
 	} else {
 		printf("No RemoteAddress specified, running in passive mode.\n");
 		peer_addr = NULL;
@@ -265,12 +265,12 @@ void relay(int sd, int tunfd, cJSON *conf)
 	arg.socket = sd;
 	arg.tun = tunfd;
 	arg.peer_addr = peer_addr;
-	arg.tbf_cps = conf_get_int("TBF_Bps", conf);
-	arg.tbf_burst = conf_get_int("TBF_burst", conf);
-	droprate = conf_get_double("DropRate", conf)*1000.0;
+	arg.tbf_cps = *conf_get_int("TBF_Bps", conf);
+	arg.tbf_burst = *conf_get_int("TBF_burst", conf);
+	droprate = *conf_get_double("DropRate", conf)*1000.0;
 	arg.drop_shift = 3;
 	arg.drop_num = (int)droprate;
-	arg.latency = conf_get_int("Delay", conf);
+	arg.latency = *conf_get_int("Delay", conf);
 
 	arg.q_tbf = llist_new(150000);	// 150000 = 15000(qps of 100M ethernet) * 10(seconds)
 	if (arg.q_tbf==NULL) {

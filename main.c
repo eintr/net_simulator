@@ -144,7 +144,7 @@ main(int argc, char **argv)
 
 	local_addr.sin_family = PF_INET;
 	local_addr.sin_addr.s_addr = 0;
-	local_addr.sin_port = htons(conf_get_int("LocalPort", conf));
+	local_addr.sin_port = htons(*conf_get_int("LocalPort", conf));
 	if (bind(sd, (void*)&local_addr, sizeof(local_addr))<0) {
 		perror("bind()");
 		exit(1);

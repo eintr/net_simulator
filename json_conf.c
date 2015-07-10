@@ -119,32 +119,50 @@ cJSON *conf_get(const char *name, cJSON *c)
 {
 	return cJSON_GetObjectItem(c, name);
 }
-/*
-int conf_get_int(const char *name, cJSON *c)
-{
-	return cJSON_GetObjectItem(c, name)->valueint;
-}
-double conf_get_double(const char *name, cJSON *c)
+
+int *conf_get_int(const char *name, cJSON *c)
 {
 	cJSON *tmp;
 	if (c==NULL) {
-		return -1;
+		return NULL;
 	}
 	tmp = cJSON_GetObjectItem(c, name);
 	if (tmp) {
-		return tmp->valuedouble;
+		return &tmp->valueint;
 	}
-	return 0.0;
+	return NULL;
 }
-int conf_get_bool(const char *name, cJSON *c)
+
+double *conf_get_double(const char *name, cJSON *c)
 {
 	cJSON *tmp;
-	tmp = cJSON_GetObjectItem(c, name);
-	if (tmp && tmp->type == cJSON_True) {
-		return 1;
+	if (c==NULL) {
+		return NULL;
 	}
-	return 0;
+	tmp = cJSON_GetObjectItem(c, name);
+	if (tmp) {
+		return &tmp->valuedouble;
+	}
+	return NULL;
 }
+
+int *conf_get_bool(const char *name, cJSON *c)
+{
+	static int true=1, false=0;
+	cJSON *tmp;
+	tmp = cJSON_GetObjectItem(c, name);
+	if (tmp==NULL) {
+		return NULL;
+	}
+	if (tmp->type == cJSON_True) {
+		return &true;
+	}
+	if (tmp->type == cJSON_False) {
+		return &false;
+	}
+	return NULL;
+}
+
 char *conf_get_str(const char *name, cJSON *c)
 {
 	cJSON *tmp;
@@ -154,7 +172,6 @@ char *conf_get_str(const char *name, cJSON *c)
 	}
 	return NULL;
 }
-*/
 
 int conf_delete(cJSON *conf)
 {
